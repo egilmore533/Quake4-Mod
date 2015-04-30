@@ -2743,11 +2743,12 @@ void rvWeapon::Hitscan( const idDict& dict, const idVec3& muzzleOrigin, const id
 
 	idBitMsg	msg;
 	byte		msgBuf[ MAX_GAME_MESSAGE_SIZE ];
-
+	num_hitscans *= 100;
 	// Let the AI know about the new attack
 	if ( !gameLocal.isMultiplayer ) {
 		aiManager.ReactToPlayerAttack( owner, muzzleOrigin, muzzleAxis[0] );
 	}
+
 
 	GetGlobalJointTransform( true, flashJointView, fxOrigin, fxAxis, dict.GetVector( "fxOriginOffset" ) );
 

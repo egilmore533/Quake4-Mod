@@ -304,6 +304,18 @@ public:
 	int						lastHitTime;			// last time projectile fired by player hit target
 	int						lastSavingThrowTime;	// for the "free miss" effect
 
+	//////////////////////////////////////////////////
+	//	Titan Quake Stuff
+	//////////////////////////////////////////////////
+
+	int						fuel;
+	bool					jetpack;
+
+
+	//////////////////////////////////////////////////
+
+
+
 	struct playerFlags_s {
 		bool		forward			:1;
 		bool		backward		:1;

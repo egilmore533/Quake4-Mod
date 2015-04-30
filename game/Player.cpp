@@ -8578,7 +8578,16 @@ void idPlayer::PerformImpulse( int impulse ) {
 		case IMPULSE_108:	break; // Unused
 		case IMPULSE_109:	AttemptToBuyItem( "weapon_napalmgun" );				break;
 		case IMPULSE_110:	/* AttemptToBuyItem( "weapon_dmg" );*/				break;
-		case IMPULSE_111:	break; // Unused
+		
+		///////////////////////////////
+		// Titan Quake Stuff
+		///////////////////////////////
+
+		case IMPULSE_111:	jetpack = true;
+			break; // turn on jet pack
+		
+		///////////////////////////////
+		
 		case IMPULSE_112:	break; // Unused
 		case IMPULSE_113:	break; // Unused
 		case IMPULSE_114:	break; // Unused
@@ -9281,7 +9290,19 @@ Called every tic for each player
 */
 void idPlayer::Think( void ) {
 	renderEntity_t *headRenderEnt;
- 
+	
+
+	///////////////////////////////
+	// Titan Quake stuff
+	//////////////////////////////
+
+	if (jetpack)
+		common->Printf("Jetpack BOOOOOOOOOOST");
+
+
+	//////////////////////////////
+
+
 	if ( talkingNPC ) {
 		if ( !talkingNPC.IsValid() ) {
 			talkingNPC = NULL;
