@@ -307,10 +307,20 @@ public:
 	//////////////////////////////////////////////////
 	//	Titan Quake Stuff
 	//////////////////////////////////////////////////
-
+	
+	//4 movement mods stuff
 	int						fuel;
-	bool					jetpack;
+	bool					jetpacking;
+	int						numJumps;
 
+	//titan mode stuff
+	bool					titanMode;
+
+	//4 perks
+	bool					fuelPlus;
+	bool					titanBoost;
+	bool					hardline;
+	bool					jumper;
 
 	//////////////////////////////////////////////////
 

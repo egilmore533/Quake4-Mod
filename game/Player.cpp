@@ -8583,13 +8583,31 @@ void idPlayer::PerformImpulse( int impulse ) {
 		// Titan Quake Stuff
 		///////////////////////////////
 
-		case IMPULSE_111:	jetpack = true;
-			break; // turn on jet pack
-		
+		case IMPULSE_111: //jetpack impulse
+		{
+			if (!jetpacking && fuel > 10)
+			{
+				jetpacking = true;
+				break; // turn on jet pack
+			}
+			else if (jetpacking)
+			{
+				jetpacking = false;
+			}
+		}
+
+		case IMPULSE_112: //jumping impulse
+		{
+			if (numJumps > 0)
+			{
+				//add upward force
+			}
+			break; 
+		}
+
+		case IMPULSE_113:	break; // Unused
 		///////////////////////////////
 		
-		case IMPULSE_112:	break; // Unused
-		case IMPULSE_113:	break; // Unused
 		case IMPULSE_114:	break; // Unused
 		case IMPULSE_115:	break; // Unused
 		case IMPULSE_116:	break; // Unused
@@ -9296,8 +9314,39 @@ void idPlayer::Think( void ) {
 	// Titan Quake stuff
 	//////////////////////////////
 
-	if (jetpack)
-		common->Printf("Jetpack BOOOOOOOOOOST");
+	//jet packing logic
+	if (jetpacking)
+	{
+		//upward force
+		if (fuel <= 0)
+		{
+			jetpacking = false;
+		}
+		else
+		{
+			fuel -= 1;
+		}
+	}
+
+	//increase fuel when jetpack is off
+	else
+	{
+		if(!fuelPlus)
+		{
+			if(fuel <= 100)//keep fuel below 100 unless perk activated
+			{
+				fuel += 0.5;
+			}
+		}
+		else
+		{
+			if (fuel <= 150)//fuel goes to 150 when perk is on
+			{
+				fuel += 1;
+			}
+		}
+	}
+
 
 
 	//////////////////////////////
