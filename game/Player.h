@@ -314,6 +314,7 @@ public:
 	float					fuelRegen;
 	bool					jetpacking;
 	int						numJumps;
+	int						maxJumps;
 
 	//titan mode stuff
 	bool					titanMode;

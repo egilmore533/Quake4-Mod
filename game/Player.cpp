@@ -1346,11 +1346,15 @@ idPlayer::idPlayer() {
 
 	//4 movement mods stuff
 	fuel = 100;
+	maxFuel = 100;
+	fuelRegen = 0.5;
 	jetpacking = false;
 	numJumps = 2;
+	maxJumps = 2;
 
 	//titan mode stuff
 	titanMode = false;
+	titanModeActivated = false;
 
 	//4 perks
 	fuelPlus = false;
@@ -1525,11 +1529,15 @@ void idPlayer::Init( void ) {
 
 	//4 movement mods stuff
 	fuel = 100;
+	maxFuel = 100;
+	fuelRegen = 0.5;
 	jetpacking = false;
 	numJumps = 2;
+	maxJumps = 2;
 
 	//titan mode stuff
 	titanMode = false;
+	titanModeActivated = false;
 
 	//4 perks
 	fuelPlus = false;
@@ -2443,11 +2451,15 @@ void idPlayer::Restore( idRestoreGame *savefile ) {
 
 	//4 movement mods stuff
 	fuel = 100;
+	maxFuel = 100;
+	fuelRegen = 0.5;
 	jetpacking = false;
 	numJumps = 2;
+	maxJumps = 2;
 
 	//titan mode stuff
 	titanMode = false;
+	titanModeActivated = false;
 
 	//4 perks
 	fuelPlus = false;
@@ -9444,7 +9456,7 @@ void idPlayer::Think( void ) {
 	idEntity *temp = physicsObj.GetGroundEntity();
 	if(temp != NULL)
 	{
-		numJumps = 2;
+		numJumps = maxJumps;
 		//physicsObj.GetGroundEntity returns an entity only if that entity is touching the ground
 		//so if null then you aren't touching the ground
 	}
@@ -9452,26 +9464,19 @@ void idPlayer::Think( void ) {
 	//increase fuel when jetpack is off
 	else
 	{
-		if(!fuelPlus)
+		if(fuel < maxFuel)
 		{
-			if(fuel < 100)//keep fuel below 100 unless perk activated
-			{
-				fuel += 0.5;
-			}
-		}
-		else
-		{
-			if (fuel <= 150)//fuel goes to 150 when perk is on
-			{
-				fuel += 1;
-			}
+			fuel += fuelRegen;
 		}
 	}
 
 	//titan Mode activation
-	if(titanMode && health <= 100)
+	if(titanMode && !titanModeActivated)
 	{
 		health = 500;
+		fuel = 0;
+		fuelRegen = 0;
+		titanModeActivated = true;
 	}
 
 	//////////////////////////////
