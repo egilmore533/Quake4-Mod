@@ -309,7 +309,7 @@ public:
 	//////////////////////////////////////////////////
 	
 	//4 movement mods stuff
-	int						fuel;
+	float					fuel;
 	bool					jetpacking;
 	int						numJumps;
 

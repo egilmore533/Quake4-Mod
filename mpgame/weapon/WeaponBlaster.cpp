@@ -92,6 +92,7 @@ rvWeaponBlaster::UpdateAttack
 ================
 */
 bool rvWeaponBlaster::UpdateAttack ( void ) {
+
 	// Clear fire forced
 	if ( fireForced ) {
 		if ( !wsfl.attack ) {

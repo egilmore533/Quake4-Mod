@@ -1339,6 +1339,28 @@ idPlayer::idPlayer() {
 	teamAmmoRegenPending	= false;
 	teamDoubler			= NULL;		
 	teamDoublerPending		= false;
+
+	//////////////////////////////
+	//Titan Quake
+	//////////////////////////////
+
+	//4 movement mods stuff
+	fuel = 100;
+	jetpacking = false;
+	numJumps = 2;
+
+	//titan mode stuff
+	titanMode = false;
+
+	//4 perks
+	fuelPlus = false;
+	titanBoost = false;
+	hardline = false;
+	jumper = false;
+
+
+	////////////////////////////////
+
 }
 
 /*
@@ -1495,6 +1517,30 @@ idPlayer::Init
 void idPlayer::Init( void ) {
 	const char			*value;
 	
+
+
+	//////////////////////////////
+	//Titan Quake
+	//////////////////////////////
+
+	//4 movement mods stuff
+	fuel = 100;
+	jetpacking = false;
+	numJumps = 2;
+
+	//titan mode stuff
+	titanMode = false;
+
+	//4 perks
+	fuelPlus = false;
+	titanBoost = false;
+	hardline = false;
+	jumper = false;
+
+
+	////////////////////////////////
+
+
 	noclip					= false;
 	godmode					= false;
 	godmodeDamage			= 0;
@@ -2052,6 +2098,9 @@ void idPlayer::Spawn( void ) {
 //RITUAL END
 
 	itemCosts = static_cast< const idDeclEntityDef * >( declManager->FindType( DECL_ENTITYDEF, "ItemCostConstants", false ) );
+
+	//Titan Quake
+	fuel = 100;
 }
 
 /*
@@ -2387,6 +2436,27 @@ void idPlayer::Restore( idRestoreGame *savefile ) {
 	savefile->ReadUserInterface( objectiveSystem, &spawnArgs );
 	savefile->ReadUserInterface( cinematicHud, &spawnArgs );
 	savefile->ReadBool( objectiveSystemOpen );
+
+	//////////////////////////////
+	//Titan Quake
+	//////////////////////////////
+
+	//4 movement mods stuff
+	fuel = 100;
+	jetpacking = false;
+	numJumps = 2;
+
+	//titan mode stuff
+	titanMode = false;
+
+	//4 perks
+	fuelPlus = false;
+	titanBoost = false;
+	hardline = false;
+	jumper = false;
+
+
+	////////////////////////////////
 
 #ifdef _XENON
 	g_ObjectiveSystemOpen = objectiveSystemOpen;
@@ -2960,6 +3030,9 @@ void idPlayer::SpawnToPoint( const idVec3 &spawn_origin, const idAngles &spawn_a
 
 	lastImpulsePlayer = NULL;
 	lastImpulseTime = 0;
+
+	//titan Quake?
+	fuel = 100;
 }
 
 /*
@@ -8502,7 +8575,18 @@ void idPlayer::PerformImpulse( int impulse ) {
 			break;
 		}
 		case IMPULSE_19: {
-/*		
+
+			if (!jetpacking && fuel > 10)
+			{
+				jetpacking = true;
+				break; // turn on jet pack
+			}
+			else if (jetpacking)
+			{
+				jetpacking = false;
+			}
+			break;
+/*			
 			// when we're not in single player, IMPULSE_19 is used for showScores
 			// otherwise it does IMPULSE_12 (PDA)
 			if ( !gameLocal.isMultiplayer ) {
@@ -8514,7 +8598,6 @@ void idPlayer::PerformImpulse( int impulse ) {
 				ToggleMap();
 			}
 */
-			break;
 		}
 		case IMPULSE_20: {
  			if ( gameLocal.isClient || entityNumber == gameLocal.localClientNum ) {
@@ -8523,7 +8606,7 @@ void idPlayer::PerformImpulse( int impulse ) {
 			break;
 		}
 		case IMPULSE_21: {
-			if( gameLocal.isServer && gameLocal.gameType == GAME_TOURNEY ) {
+			/*if( gameLocal.isServer && gameLocal.gameType == GAME_TOURNEY ) {
 				// only allow a client to join the waiting arena if they are not currently assigned to an arena
 
 				// removed waiting arena functionality for now
@@ -8537,9 +8620,20 @@ void idPlayer::PerformImpulse( int impulse ) {
 						JoinInstance( MAX_ARENAS );
 						ServerSpectate( false );
 					}
-				}*/
+				}
+			*/
+
+			common->Printf("Jumps: %d\n", numJumps);
+			if (numJumps > 0)
+			{
+				idVec3 v1 = physicsObj.GetLinearVelocity();
+				//physicsObj.GetGroundEntity;
+
+				v1.Set(10000, 10000, 10000);
+				physicsObj.AddForce(0, physicsObj.GetOrigin(), v1);
+				numJumps--;
 			}
-			break;
+			break; 
 		}
 		case IMPULSE_22: {
  			if ( gameLocal.isClient || entityNumber == gameLocal.localClientNum ) {
@@ -8567,8 +8661,9 @@ void idPlayer::PerformImpulse( int impulse ) {
 
 // RITUAL BEGIN
 // squirrel: Mode-agnostic buymenus
-		case IMPULSE_100:	AttemptToBuyItem( "weapon_shotgun" );				break;
-		case IMPULSE_101:	AttemptToBuyItem( "weapon_machinegun" );			break;
+		
+		//case IMPULSE_100:	AttemptToBuyItem( "weapon_shotgun" );				break;
+		//case IMPULSE_101:	AttemptToBuyItem( "weapon_machinegun" );			break;
 		case IMPULSE_102:	AttemptToBuyItem( "weapon_hyperblaster" );			break;
 		case IMPULSE_103:	AttemptToBuyItem( "weapon_grenadelauncher" );		break;
 		case IMPULSE_104:	AttemptToBuyItem( "weapon_nailgun" );				break;
@@ -8583,8 +8678,9 @@ void idPlayer::PerformImpulse( int impulse ) {
 		// Titan Quake Stuff
 		///////////////////////////////
 
-		case IMPULSE_111: //jetpack impulse
+		case IMPULSE_100: //jetpack impulse
 		{
+			common->Printf("Fuck\n");
 			if (!jetpacking && fuel > 10)
 			{
 				jetpacking = true;
@@ -8594,13 +8690,20 @@ void idPlayer::PerformImpulse( int impulse ) {
 			{
 				jetpacking = false;
 			}
+			break;
 		}
 
-		case IMPULSE_112: //jumping impulse
+		case IMPULSE_101: //jumping impulse
 		{
+			common->Printf("Jumps: %d\n", numJumps);
 			if (numJumps > 0)
 			{
-				//add upward force
+				loggedAccel_t	*acc = &loggedAccel[currentLoggedAccel&(NUM_LOGGED_ACCELS-1)];
+				currentLoggedAccel++;
+				acc->time = gameLocal.time;
+				acc->dir[2] = 200;
+				acc->dir[0] = acc->dir[1] = 0;
+				numJumps--;
 			}
 			break; 
 		}
@@ -8657,7 +8760,15 @@ void idPlayer::PerformImpulse( int impulse ) {
 #endif
 //RAVEN END
 }
-   
+
+/*
+===============
+idPlayer::DoubleJump
+===============
+*/
+
+
+
 /*
 ==============
 idPlayer::HandleESC
@@ -9314,6 +9425,7 @@ void idPlayer::Think( void ) {
 	// Titan Quake stuff
 	//////////////////////////////
 
+	//common->Printf();
 	//jet packing logic
 	if (jetpacking)
 	{
@@ -9321,6 +9433,7 @@ void idPlayer::Think( void ) {
 		if (fuel <= 0)
 		{
 			jetpacking = false;
+			titanMode = true;
 		}
 		else
 		{
@@ -9328,12 +9441,20 @@ void idPlayer::Think( void ) {
 		}
 	}
 
+	idEntity *temp = physicsObj.GetGroundEntity();
+	if(temp != NULL)
+	{
+		numJumps = 2;
+		//physicsObj.GetGroundEntity returns an entity only if that entity is touching the ground
+		//so if null then you aren't touching the ground
+	}
+
 	//increase fuel when jetpack is off
 	else
 	{
 		if(!fuelPlus)
 		{
-			if(fuel <= 100)//keep fuel below 100 unless perk activated
+			if(fuel < 100)//keep fuel below 100 unless perk activated
 			{
 				fuel += 0.5;
 			}
@@ -9346,8 +9467,6 @@ void idPlayer::Think( void ) {
 			}
 		}
 	}
-
-
 
 	//////////////////////////////
 
