@@ -9468,6 +9468,12 @@ void idPlayer::Think( void ) {
 		}
 	}
 
+	//titan Mode activation
+	if(titanMode && health <= 100)
+	{
+		health = 500;
+	}
+
 	//////////////////////////////
 
 

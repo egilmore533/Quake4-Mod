@@ -310,11 +310,14 @@ public:
 	
 	//4 movement mods stuff
 	float					fuel;
+	float					maxFuel;
+	float					fuelRegen;
 	bool					jetpacking;
 	int						numJumps;
 
 	//titan mode stuff
 	bool					titanMode;
+	bool					titanModeActivated;
 
 	//4 perks
 	bool					fuelPlus;
