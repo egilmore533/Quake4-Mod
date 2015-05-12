@@ -1346,15 +1346,15 @@ idPlayer::idPlayer() {
 
 	//4 movement mods stuff
 	fuel = 100;
-	maxFuel = 100;
-	fuelRegen = 0.5;
+	//maxFuel = 100;
+	//fuelRegen = 0.5;
 	jetpacking = false;
 	numJumps = 2;
-	maxJumps = 2;
+	//maxJumps = 2;
 
 	//titan mode stuff
 	titanMode = false;
-	titanModeActivated = false;
+	//titanModeActivated = false;
 
 	//4 perks
 	fuelPlus = false;
@@ -1529,15 +1529,15 @@ void idPlayer::Init( void ) {
 
 	//4 movement mods stuff
 	fuel = 100;
-	maxFuel = 100;
-	fuelRegen = 0.5;
+	//maxFuel = 100;
+	//fuelRegen = 0.5;
 	jetpacking = false;
 	numJumps = 2;
-	maxJumps = 2;
+	//maxJumps = 2;
 
 	//titan mode stuff
 	titanMode = false;
-	titanModeActivated = false;
+	//titanModeActivated = false;
 
 	//4 perks
 	fuelPlus = false;
@@ -2451,15 +2451,15 @@ void idPlayer::Restore( idRestoreGame *savefile ) {
 
 	//4 movement mods stuff
 	fuel = 100;
-	maxFuel = 100;
-	fuelRegen = 0.5;
+	//maxFuel = 100;
+	//fuelRegen = 0.5;
 	jetpacking = false;
 	numJumps = 2;
-	maxJumps = 2;
+	//maxJumps = 2;
 
 	//titan mode stuff
 	titanMode = false;
-	titanModeActivated = false;
+	//titanModeActivated = false;
 
 	//4 perks
 	fuelPlus = false;
@@ -8638,11 +8638,13 @@ void idPlayer::PerformImpulse( int impulse ) {
 			common->Printf("Jumps: %d\n", numJumps);
 			if (numJumps > 0)
 			{
+				common->Printf("Fuck\n");
 				idVec3 v1 = physicsObj.GetLinearVelocity();
 				//physicsObj.GetGroundEntity;
 
 				v1.Set(10000, 10000, 10000);
 				physicsObj.AddForce(0, physicsObj.GetOrigin(), v1);
+				pfl.jump = true;
 				numJumps--;
 			}
 			break; 
@@ -9456,7 +9458,7 @@ void idPlayer::Think( void ) {
 	idEntity *temp = physicsObj.GetGroundEntity();
 	if(temp != NULL)
 	{
-		numJumps = maxJumps;
+		numJumps = 2;
 		//physicsObj.GetGroundEntity returns an entity only if that entity is touching the ground
 		//so if null then you aren't touching the ground
 	}
@@ -9464,19 +9466,19 @@ void idPlayer::Think( void ) {
 	//increase fuel when jetpack is off
 	else
 	{
-		if(fuel < maxFuel)
+		if(fuel < 100)
 		{
-			fuel += fuelRegen;
+			fuel += 100;
 		}
 	}
 
 	//titan Mode activation
-	if(titanMode && !titanModeActivated)
+	if(titanMode && health <= 100)
 	{
 		health = 500;
 		fuel = 0;
-		fuelRegen = 0;
-		titanModeActivated = true;
+		//fuelRegen = 0;
+		//titanModeActivated = true;
 	}
 
 	//////////////////////////////
