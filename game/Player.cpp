@@ -1344,13 +1344,10 @@ idPlayer::idPlayer() {
 	//Titan Quake
 	//////////////////////////////
 
-	//4 movement mods stuff
+	//fuel stuff
 	fuel = 1000;
 	maxFuel = 1000;
 	fuelRegen = 0.5;
-	jetpacking = false;
-	numJumps = 2;
-	maxJumps = 2;
 
 	//titan mode stuff
 	titanMode = false;
@@ -1363,7 +1360,7 @@ idPlayer::idPlayer() {
 	hardKnocka = false;
 	titanBoost = false;
 	gunslinger = false;
-	jumper = false;
+	chainTooHeavy = false;
 
 
 	////////////////////////////////
@@ -1530,13 +1527,10 @@ void idPlayer::Init( void ) {
 	//Titan Quake
 	//////////////////////////////
 
-	//4 movement mods stuff
+	//fuel stuff
 	fuel = 1000;
 	maxFuel = 1000;
 	fuelRegen = 0.5;
-	jetpacking = false;
-	numJumps = 2;
-	maxJumps = 2;
 
 	//titan mode stuff
 	titanMode = false;
@@ -1549,7 +1543,7 @@ void idPlayer::Init( void ) {
 	hardKnocka = false;
 	titanBoost = false;
 	gunslinger = false;
-	jumper = false;
+	chainTooHeavy = false;
 
 
 	////////////////////////////////
@@ -2167,31 +2161,6 @@ void idPlayer::Save( idSaveGame *savefile ) const {
  	savefile->WriteInt( 0 );
 	savefile->WriteInt( lastSavingThrowTime );
 
-	/*
-	/////////////////////////////////////////
-	// Titan Mode Stuff 
-	/////////////////////////////////////////
-
-	savefile->WriteFloat( fuel );
-	savefile->WriteFloat( maxFuel );
-	savefile->WriteFloat( fuelRegen );
-	savefile->WriteBool( jetpacking );
-	savefile->WriteInt( numJumps );
-	savefile->WriteInt( maxJumps );
-
-	savefile->WriteBool( titanMode );
-	savefile->WriteBool( titanModeActivated );
-	savefile->WriteInt( health );
-	savefile->WriteBool( writtenHealth );
-
-	savefile->WriteBool( hardKnocka );
-	savefile->WriteBool( titanBoost );
-	savefile->WriteBool( gunslinger );
-	savefile->WriteBool( jumper );
-
-	/////////////////////////////////////////
-	*/
-
 	// idBoolFields don't need to be saved, just re-linked in Restore
 	savefile->Write( &pfl, sizeof( pfl ) );
 
@@ -2460,32 +2429,6 @@ void idPlayer::Restore( idRestoreGame *savefile ) {
 	int foo;
  	savefile->ReadInt( foo );
 	savefile->ReadInt( lastSavingThrowTime );
-
-	/*
-	/////////////////////////////////////////
-	// Titan Quake Stuff
-	/////////////////////////////////////////
-
-	//this still doesn't always work for some reason it works only if you are at the start of the level
-	savefile->ReadFloat( fuel );
-	savefile->ReadFloat( maxFuel );
-	savefile->ReadFloat( fuelRegen );
-	savefile->ReadBool( jetpacking );
-	savefile->ReadInt( numJumps );
-	savefile->ReadInt( maxJumps );
-
-	savefile->ReadBool( titanMode );
-	savefile->ReadBool( titanModeActivated );
-	savefile->ReadInt( health );
-	savefile->ReadBool( writtenHealth );
-
-	savefile->ReadBool( hardKnocka );
-	savefile->ReadBool( titanBoost );
-	savefile->ReadBool( gunslinger );
-	savefile->ReadBool( jumper );
-
-	/////////////////////////////////////////
-	*/
 
 	savefile->Read( &pfl, sizeof( pfl ) );
 
@@ -2758,13 +2701,10 @@ void idPlayer::Restore( idRestoreGame *savefile ) {
 	//Titan Quake
 	//////////////////////////////
 
-	//4 movement mods stuff
+	//fuel stuff
 	fuel = 1000;
 	maxFuel = 1000;
 	fuelRegen = 0.5;
-	jetpacking = false;
-	numJumps = 2;
-	maxJumps = 2;
 
 	//titan mode stuff
 	titanMode = false;
@@ -2776,7 +2716,7 @@ void idPlayer::Restore( idRestoreGame *savefile ) {
 	hardKnocka = false;
 	titanBoost = false;
 	gunslinger = false;
-	jumper = false;
+	chainTooHeavy = false;
 
 
 	////////////////////////////////
@@ -8651,7 +8591,7 @@ void idPlayer::PerformImpulse( int impulse ) {
 			//////////////////////////////////////
 			// Titan Quake Stuff 
 			//////////////////////////////////////
-			if (!titanMode && fuel >= 1000)
+			if (!titanMode && fuel >= maxFuel)
 			{
 				titanMode = true;
 			}
@@ -8689,7 +8629,7 @@ void idPlayer::PerformImpulse( int impulse ) {
 			hardKnocka = true;
 			titanBoost  = false;
 			gunslinger	= false;
-			jumper		= false;
+			chainTooHeavy = false;
 
 			///////////////////////////////////
 			break;
@@ -8719,7 +8659,7 @@ void idPlayer::PerformImpulse( int impulse ) {
 			hardKnocka = false;
 			titanBoost  = true;
 			gunslinger	= false;
-			jumper		= false;
+			chainTooHeavy = false;
 
 			///////////////////////////////////
 			break; 
@@ -8738,7 +8678,7 @@ void idPlayer::PerformImpulse( int impulse ) {
 			hardKnocka = false;
 			titanBoost  = false;
 			gunslinger	= true;
-			jumper		= false;
+			chainTooHeavy = false;
 
 			///////////////////////////////////
 			break; 
@@ -8751,13 +8691,13 @@ void idPlayer::PerformImpulse( int impulse ) {
 			*/
 
 			///////////////////////////////////
-			// Titan Quake:  jumper activation
+			// Titan Quake:  chainTooHeavy activation
 			///////////////////////////////////
 
 			hardKnocka = false;
 			titanBoost  = false;
 			gunslinger	= false;
-			jumper		= true;
+			chainTooHeavy = true;
 
 			///////////////////////////////////
 
@@ -8788,24 +8728,9 @@ void idPlayer::PerformImpulse( int impulse ) {
 		case IMPULSE_108:	break; // Unused
 		case IMPULSE_109:	AttemptToBuyItem( "weapon_napalmgun" );				break;
 		case IMPULSE_110:	/* AttemptToBuyItem( "weapon_dmg" );*/				break;
-		
-		///////////////////////////////
-		// Titan Quake Stuff
-		///////////////////////////////
-
-		case IMPULSE_100: //unused impulse
-		{
-			break;
-		}
-
-		case IMPULSE_101: //unused impulse
-		{
-			break; 
-		}
-
+		case IMPULSE_100:	break; // Unused
+		case IMPULSE_101:	break; // Unused
 		case IMPULSE_113:	break; // Unused
-		///////////////////////////////
-		
 		case IMPULSE_114:	break; // Unused
 		case IMPULSE_115:	break; // Unused
 		case IMPULSE_116:	break; // Unused
@@ -8988,7 +8913,26 @@ void idPlayer::AdjustSpeed( void ) {
 		speed *= 0.33f;
 	}
 
-	physicsObj.SetSpeed( speed, pm_crouchspeed.GetFloat() );
+	/////////////////////////////////////
+	// Titan Mode Stuff
+	/////////////////////////////////////
+
+	float temp_pm_crouchspeed = pm_crouchspeed.GetFloat();
+
+	if (titanMode || chainTooHeavyActivated)//if titan mode or cahinTooHeavy go slower
+	{
+		speed *= 0.75;
+		temp_pm_crouchspeed *= 0.75;
+	}
+	else //if neither of those are true go supah fast
+	{
+		speed *= 2.5;
+		temp_pm_crouchspeed *= 2.5;
+	}
+
+	physicsObj.SetSpeed( speed, temp_pm_crouchspeed );
+
+	/////////////////////////////////////
 }
 
 /*
@@ -9520,7 +9464,7 @@ void idPlayer::Think( void ) {
 	// Titan Quake stuff
 	//////////////////////////////
 
-	common->Printf("Perk Hard Knocka: %s\nPerk Titan Boost: %s\nPerk Gunslinger: %s\nPerk 4: %s\n", hardKnocka ? "true" : "false", titanBoost ? "true" : "false", gunslinger ? "true" : "false", jumper ? "true" : "false");
+	common->Printf("Perk Hard Knocka: %s\nPerk Titan Boost: %s\nPerk Gunslinger: %s\nPerk Chain Too Heavy: %s\n", hardKnocka ? "On" : "Off", titanBoost ? "On" : "Off", gunslinger ? "On" : "Off", chainTooHeavy ? "On" : "Off");
 
 	//titanMode fuel decrease
 	if (titanMode)
@@ -9555,15 +9499,6 @@ void idPlayer::Think( void ) {
 		}
 	}
 
-	//checking for ground entity
-	idEntity *temp = physicsObj.GetGroundEntity();
-	if(temp != NULL)
-	{
-		numJumps = 2;
-		//physicsObj.GetGroundEntity returns an entity only if that entity is touching the ground
-		//so if null then you aren't touching the ground
-	}
-
 	//titan Mode activation
 	if(titanMode && !titanModeActivated)
 	{
@@ -9593,16 +9528,19 @@ void idPlayer::Think( void ) {
 		}
 	}
 
-	if(jumper && !(inventory.armor > 0))
+	if(chainTooHeavy && !(inventory.armor > 0))//can't activate if you already have armor, sorry kid
 	{
-		inventory.armor = 600;
-		jumper = false;
-		//jumperActivated = true;
+		inventory.armor = 400;
+		chainTooHeavy = false;
+		chainTooHeavyActivated = true;
 	}
-	if (inventory.armor > 0 /* && jumperActivated*/) //and armor perk activated
+	if (inventory.armor > 0 && chainTooHeavyActivated) //and armor perk activated
 	{
 		inventory.armor -= 1;
-		//armor perk activated off
+	}
+	else if(inventory.armor <= 0 && chainTooHeavyActivated)//once armor is back to zero set chainTooHeavyActivated to false
+	{
+		chainTooHeavyActivated = false;
 	}
 	//////////////////////////////
 

@@ -312,9 +312,6 @@ public:
 	float					fuel; //current fuel
 	float					maxFuel; //maximum fuel
 	float					fuelRegen; //how much fuel is restored per tic in player think
-	bool					jetpacking; //not used
-	int						numJumps; //not used 
-	int						maxJumps; //not used
 
 	//titan mode stuff
 	bool					titanMode; //titan Mode On/Off
@@ -326,8 +323,8 @@ public:
 	bool					hardKnocka;
 	bool					titanBoost;
 	bool					gunslinger;
-	bool					jumper;
-	bool					jumperActivated; //lets player think know the player used this perk recently, false when not used recently
+	bool					chainTooHeavy;
+	bool					chainTooHeavyActivated; //lets player think know the player used this perk recently, false when not used recently
 
 	//////////////////////////////////////////////////
 
