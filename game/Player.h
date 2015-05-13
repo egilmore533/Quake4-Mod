@@ -323,10 +323,11 @@ public:
 	bool					writtenHealth; //true when normal health restored
 
 	//4 perks
-	bool					blasterPlus;
+	bool					hardKnocka;
 	bool					titanBoost;
-	bool					hardline;
+	bool					gunslinger;
 	bool					jumper;
+	bool					jumperActivated; //lets player think know the player used this perk recently, false when not used recently
 
 	//////////////////////////////////////////////////
 

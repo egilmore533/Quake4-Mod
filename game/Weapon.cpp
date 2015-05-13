@@ -2505,6 +2505,18 @@ rvWeapon::Attack
 void rvWeapon::Attack( bool altAttack, int num_attacks, float spread, float fuseOffset, float power ) {
 	idVec3 muzzleOrigin;
 	idMat3 muzzleAxis;
+
+	idPlayer *player = gameLocal.GetLocalPlayer();
+
+	if (player->gunslinger)
+	{
+		spread *= 0.5;
+	}
+
+	if (player->hardKnocka)
+	{
+		power *= 3;
+	}
 	
 	if ( !viewModel ) {
 		common->Warning( "NULL viewmodel %s\n", __FUNCTION__ );

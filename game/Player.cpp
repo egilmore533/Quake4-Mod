@@ -1360,9 +1360,9 @@ idPlayer::idPlayer() {
 
 
 	//4 perks
-	blasterPlus = false;
+	hardKnocka = false;
 	titanBoost = false;
-	hardline = false;
+	gunslinger = false;
 	jumper = false;
 
 
@@ -1546,9 +1546,9 @@ void idPlayer::Init( void ) {
 
 
 	//4 perks
-	blasterPlus = false;
+	hardKnocka = false;
 	titanBoost = false;
-	hardline = false;
+	gunslinger = false;
 	jumper = false;
 
 
@@ -2184,9 +2184,9 @@ void idPlayer::Save( idSaveGame *savefile ) const {
 	savefile->WriteInt( health );
 	savefile->WriteBool( writtenHealth );
 
-	savefile->WriteBool( blasterPlus );
+	savefile->WriteBool( hardKnocka );
 	savefile->WriteBool( titanBoost );
-	savefile->WriteBool( hardline );
+	savefile->WriteBool( gunslinger );
 	savefile->WriteBool( jumper );
 
 	/////////////////////////////////////////
@@ -2479,9 +2479,9 @@ void idPlayer::Restore( idRestoreGame *savefile ) {
 	savefile->ReadInt( health );
 	savefile->ReadBool( writtenHealth );
 
-	savefile->ReadBool( blasterPlus );
+	savefile->ReadBool( hardKnocka );
 	savefile->ReadBool( titanBoost );
-	savefile->ReadBool( hardline );
+	savefile->ReadBool( gunslinger );
 	savefile->ReadBool( jumper );
 
 	/////////////////////////////////////////
@@ -2773,9 +2773,9 @@ void idPlayer::Restore( idRestoreGame *savefile ) {
 	writtenHealth = false;
 
 	//4 perks
-	blasterPlus = false;
+	hardKnocka = false;
 	titanBoost = false;
-	hardline = false;
+	gunslinger = false;
 	jumper = false;
 
 
@@ -8686,9 +8686,9 @@ void idPlayer::PerformImpulse( int impulse ) {
 			// Titan Quake:  Blaster Plus activation
 			///////////////////////////////////
 
-			blasterPlus = true;
+			hardKnocka = true;
 			titanBoost  = false;
-			hardline	= false;
+			gunslinger	= false;
 			jumper		= false;
 
 			///////////////////////////////////
@@ -8716,9 +8716,9 @@ void idPlayer::PerformImpulse( int impulse ) {
 			// Titan Quake:  titan Boost activation
 			///////////////////////////////////
 
-			blasterPlus = false;
+			hardKnocka = false;
 			titanBoost  = true;
-			hardline	= false;
+			gunslinger	= false;
 			jumper		= false;
 
 			///////////////////////////////////
@@ -8732,12 +8732,12 @@ void idPlayer::PerformImpulse( int impulse ) {
 			*/
 
 			///////////////////////////////////
-			// Titan Quake:  hardline activation
+			// Titan Quake:  gunslinger activation
 			///////////////////////////////////
 
-			blasterPlus = false;
+			hardKnocka = false;
 			titanBoost  = false;
-			hardline	= true;
+			gunslinger	= true;
 			jumper		= false;
 
 			///////////////////////////////////
@@ -8754,9 +8754,9 @@ void idPlayer::PerformImpulse( int impulse ) {
 			// Titan Quake:  jumper activation
 			///////////////////////////////////
 
-			blasterPlus = false;
+			hardKnocka = false;
 			titanBoost  = false;
-			hardline	= false;
+			gunslinger	= false;
 			jumper		= true;
 
 			///////////////////////////////////
@@ -9520,7 +9520,7 @@ void idPlayer::Think( void ) {
 	// Titan Quake stuff
 	//////////////////////////////
 
-	common->Printf("Perk 1: %s\nPerk 2: %s\nPerk 3: %s\nPerk 4: %s\n", titanBoost ? "true" : "false", blasterPlus ? "true" : "false", hardline ? "true" : "false", jumper ? "true" : "false");
+	common->Printf("Perk Hard Knocka: %s\nPerk Titan Boost: %s\nPerk Gunslinger: %s\nPerk 4: %s\n", hardKnocka ? "true" : "false", titanBoost ? "true" : "false", gunslinger ? "true" : "false", jumper ? "true" : "false");
 
 	//titanMode fuel decrease
 	if (titanMode)
@@ -9584,7 +9584,7 @@ void idPlayer::Think( void ) {
 	{
 		maxFuel = 1500;
 	}
-	else if (maxFuel > 1000)
+	else if (!titanBoost && maxFuel > 1000)
 	{
 		maxFuel = 1000;
 		if (fuel > 1000)
@@ -9593,6 +9593,17 @@ void idPlayer::Think( void ) {
 		}
 	}
 
+	if(jumper && !(inventory.armor > 0))
+	{
+		inventory.armor = 600;
+		jumper = false;
+		//jumperActivated = true;
+	}
+	if (inventory.armor > 0 /* && jumperActivated*/) //and armor perk activated
+	{
+		inventory.armor -= 1;
+		//armor perk activated off
+	}
 	//////////////////////////////
 
 
