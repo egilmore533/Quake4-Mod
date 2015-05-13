@@ -2167,6 +2167,31 @@ void idPlayer::Save( idSaveGame *savefile ) const {
  	savefile->WriteInt( 0 );
 	savefile->WriteInt( lastSavingThrowTime );
 
+	/*
+	/////////////////////////////////////////
+	// Titan Mode Stuff 
+	/////////////////////////////////////////
+
+	savefile->WriteFloat( fuel );
+	savefile->WriteFloat( maxFuel );
+	savefile->WriteFloat( fuelRegen );
+	savefile->WriteBool( jetpacking );
+	savefile->WriteInt( numJumps );
+	savefile->WriteInt( maxJumps );
+
+	savefile->WriteBool( titanMode );
+	savefile->WriteBool( titanModeActivated );
+	savefile->WriteInt( health );
+	savefile->WriteBool( writtenHealth );
+
+	savefile->WriteBool( blasterPlus );
+	savefile->WriteBool( titanBoost );
+	savefile->WriteBool( hardline );
+	savefile->WriteBool( jumper );
+
+	/////////////////////////////////////////
+	*/
+
 	// idBoolFields don't need to be saved, just re-linked in Restore
 	savefile->Write( &pfl, sizeof( pfl ) );
 
@@ -2436,6 +2461,32 @@ void idPlayer::Restore( idRestoreGame *savefile ) {
  	savefile->ReadInt( foo );
 	savefile->ReadInt( lastSavingThrowTime );
 
+	/*
+	/////////////////////////////////////////
+	// Titan Quake Stuff
+	/////////////////////////////////////////
+
+	//this still doesn't always work for some reason it works only if you are at the start of the level
+	savefile->ReadFloat( fuel );
+	savefile->ReadFloat( maxFuel );
+	savefile->ReadFloat( fuelRegen );
+	savefile->ReadBool( jetpacking );
+	savefile->ReadInt( numJumps );
+	savefile->ReadInt( maxJumps );
+
+	savefile->ReadBool( titanMode );
+	savefile->ReadBool( titanModeActivated );
+	savefile->ReadInt( health );
+	savefile->ReadBool( writtenHealth );
+
+	savefile->ReadBool( blasterPlus );
+	savefile->ReadBool( titanBoost );
+	savefile->ReadBool( hardline );
+	savefile->ReadBool( jumper );
+
+	/////////////////////////////////////////
+	*/
+
 	savefile->Read( &pfl, sizeof( pfl ) );
 
 	inventory.Restore( savefile );
@@ -2451,32 +2502,7 @@ void idPlayer::Restore( idRestoreGame *savefile ) {
 	savefile->ReadUserInterface( cinematicHud, &spawnArgs );
 	savefile->ReadBool( objectiveSystemOpen );
 
-	//////////////////////////////
-	//Titan Quake
-	//////////////////////////////
-
-	//4 movement mods stuff
-	fuel = 1000;
-	maxFuel = 1000;
-	fuelRegen = 0.5;
-	jetpacking = false;
-	numJumps = 2;
-	maxJumps = 2;
-
-	//titan mode stuff
-	titanMode = false;
-	titanModeActivated = false;
-	saveHealth = 0;
-	writtenHealth = false;
-
-	//4 perks
-	blasterPlus = false;
-	titanBoost = false;
-	hardline = false;
-	jumper = false;
-
-
-	////////////////////////////////
+	
 
 #ifdef _XENON
 	g_ObjectiveSystemOpen = objectiveSystemOpen;
@@ -2727,6 +2753,33 @@ void idPlayer::Restore( idRestoreGame *savefile ) {
 	declManager->FindType( DECL_ENTITYDEF, "dmg_shellshock", false, false );
 	declManager->FindType( DECL_ENTITYDEF, "dmg_shellshock_nohl", false, false );
 // RAVEN END
+
+	//////////////////////////////
+	//Titan Quake
+	//////////////////////////////
+
+	//4 movement mods stuff
+	fuel = 1000;
+	maxFuel = 1000;
+	fuelRegen = 0.5;
+	jetpacking = false;
+	numJumps = 2;
+	maxJumps = 2;
+
+	//titan mode stuff
+	titanMode = false;
+	titanModeActivated = false;
+	saveHealth = 100;
+	writtenHealth = false;
+
+	//4 perks
+	blasterPlus = false;
+	titanBoost = false;
+	hardline = false;
+	jumper = false;
+
+
+	////////////////////////////////
 }
 
 /*
@@ -8595,7 +8648,9 @@ void idPlayer::PerformImpulse( int impulse ) {
 			break;
 		}
 		case IMPULSE_19: {
-
+			//////////////////////////////////////
+			// Titan Quake Stuff 
+			//////////////////////////////////////
 			if (!titanMode && fuel >= 1000)
 			{
 				titanMode = true;
@@ -8604,17 +8659,9 @@ void idPlayer::PerformImpulse( int impulse ) {
 			{
 				titanMode = false;
 			}
-			/*
-			if (!jetpacking && fuel > 10)
-			{
-				jetpacking = true;
-				break; // turn on jet pack
-			}
-			else if (jetpacking)
-			{
-				jetpacking = false;
-			}
-			*/
+
+			/////////////////////////////////////
+
 			break;
 /*			
 			// when we're not in single player, IMPULSE_19 is used for showScores
@@ -8630,9 +8677,21 @@ void idPlayer::PerformImpulse( int impulse ) {
 */
 		}
 		case IMPULSE_20: {
- 			if ( gameLocal.isClient || entityNumber == gameLocal.localClientNum ) {
+ 			/*if ( gameLocal.isClient || entityNumber == gameLocal.localClientNum ) {
  				gameLocal.mpGame.ToggleTeam( );
 			}
+			*/
+
+			///////////////////////////////////
+			// Titan Quake:  Blaster Plus activation
+			///////////////////////////////////
+
+			blasterPlus = true;
+			titanBoost  = false;
+			hardline	= false;
+			jumper		= false;
+
+			///////////////////////////////////
 			break;
 		}
 		case IMPULSE_21: {
@@ -8652,19 +8711,56 @@ void idPlayer::PerformImpulse( int impulse ) {
 					}
 				}
 			*/
+
+			///////////////////////////////////
+			// Titan Quake:  titan Boost activation
+			///////////////////////////////////
+
+			blasterPlus = false;
+			titanBoost  = true;
+			hardline	= false;
+			jumper		= false;
+
+			///////////////////////////////////
 			break; 
 		}
 		case IMPULSE_22: {
- 			if ( gameLocal.isClient || entityNumber == gameLocal.localClientNum ) {
+ 			/*
+			if ( gameLocal.isClient || entityNumber == gameLocal.localClientNum ) {
  				gameLocal.mpGame.ToggleSpectate( );
    			}
-   			break;
+			*/
+
+			///////////////////////////////////
+			// Titan Quake:  hardline activation
+			///////////////////////////////////
+
+			blasterPlus = false;
+			titanBoost  = false;
+			hardline	= true;
+			jumper		= false;
+
+			///////////////////////////////////
+			break; 
    		}
 				
 		case IMPULSE_28: {
- 			if ( gameLocal.isClient || entityNumber == gameLocal.localClientNum ) {
+ 			/*if ( gameLocal.isClient || entityNumber == gameLocal.localClientNum ) {
  				gameLocal.mpGame.CastVote( gameLocal.localClientNum, true );
    			}
+			*/
+
+			///////////////////////////////////
+			// Titan Quake:  jumper activation
+			///////////////////////////////////
+
+			blasterPlus = false;
+			titanBoost  = false;
+			hardline	= false;
+			jumper		= true;
+
+			///////////////////////////////////
+
    			break;
    		}
    		case IMPULSE_29: {
@@ -8697,33 +8793,13 @@ void idPlayer::PerformImpulse( int impulse ) {
 		// Titan Quake Stuff
 		///////////////////////////////
 
-		case IMPULSE_100: //jetpack impulse
+		case IMPULSE_100: //unused impulse
 		{
-			common->Printf("Fuck\n");
-			if (!jetpacking && fuel > 10)
-			{
-				jetpacking = true;
-				break; // turn on jet pack
-			}
-			else if (jetpacking)
-			{
-				jetpacking = false;
-			}
 			break;
 		}
 
-		case IMPULSE_101: //jumping impulse
+		case IMPULSE_101: //unused impulse
 		{
-			common->Printf("Jumps: %d\n", numJumps);
-			if (numJumps > 0)
-			{
-				loggedAccel_t	*acc = &loggedAccel[currentLoggedAccel&(NUM_LOGGED_ACCELS-1)];
-				currentLoggedAccel++;
-				acc->time = gameLocal.time;
-				acc->dir[2] = 200;
-				acc->dir[0] = acc->dir[1] = 0;
-				numJumps--;
-			}
 			break; 
 		}
 
@@ -9444,7 +9520,7 @@ void idPlayer::Think( void ) {
 	// Titan Quake stuff
 	//////////////////////////////
 
-	//common->Printf();
+	common->Printf("Perk 1: %s\nPerk 2: %s\nPerk 3: %s\nPerk 4: %s\n", titanBoost ? "true" : "false", blasterPlus ? "true" : "false", hardline ? "true" : "false", jumper ? "true" : "false");
 
 	//titanMode fuel decrease
 	if (titanMode)
@@ -9493,8 +9569,28 @@ void idPlayer::Think( void ) {
 	{
 		saveHealth = health;
 		writtenHealth = false;
-		health = 500;
+		if( titanBoost )
+		{
+			health = 750;
+		}
+		else
+		{
+			health = 500;
+		}
 		titanModeActivated = true;
+	}
+
+	if (titanBoost && maxFuel < 1500)
+	{
+		maxFuel = 1500;
+	}
+	else if (maxFuel > 1000)
+	{
+		maxFuel = 1000;
+		if (fuel > 1000)
+		{
+			fuel = 1000;
+		}
 	}
 
 	//////////////////////////////

@@ -131,7 +131,6 @@ bool rvWeaponBlaster::UpdateAttack ( void ) {
 					SetState ( "Lower", 0 );
 				} else {
 					SetState ( "Fire", 0 );
-					player->titanMode = false;
 				}
 			}
 			return true;
