@@ -1345,19 +1345,22 @@ idPlayer::idPlayer() {
 	//////////////////////////////
 
 	//4 movement mods stuff
-	fuel = 100;
-	//maxFuel = 100;
-	//fuelRegen = 0.5;
+	fuel = 1000;
+	maxFuel = 1000;
+	fuelRegen = 0.5;
 	jetpacking = false;
 	numJumps = 2;
-	//maxJumps = 2;
+	maxJumps = 2;
 
 	//titan mode stuff
 	titanMode = false;
-	//titanModeActivated = false;
+	titanModeActivated = false;
+	saveHealth = 0;
+	writtenHealth = false;
+
 
 	//4 perks
-	fuelPlus = false;
+	blasterPlus = false;
 	titanBoost = false;
 	hardline = false;
 	jumper = false;
@@ -1528,19 +1531,22 @@ void idPlayer::Init( void ) {
 	//////////////////////////////
 
 	//4 movement mods stuff
-	fuel = 100;
-	//maxFuel = 100;
-	//fuelRegen = 0.5;
+	fuel = 1000;
+	maxFuel = 1000;
+	fuelRegen = 0.5;
 	jetpacking = false;
 	numJumps = 2;
-	//maxJumps = 2;
+	maxJumps = 2;
 
 	//titan mode stuff
 	titanMode = false;
-	//titanModeActivated = false;
+	titanModeActivated = false;
+	saveHealth = 0;
+	writtenHealth = false;
+
 
 	//4 perks
-	fuelPlus = false;
+	blasterPlus = false;
 	titanBoost = false;
 	hardline = false;
 	jumper = false;
@@ -2450,19 +2456,21 @@ void idPlayer::Restore( idRestoreGame *savefile ) {
 	//////////////////////////////
 
 	//4 movement mods stuff
-	fuel = 100;
-	//maxFuel = 100;
-	//fuelRegen = 0.5;
+	fuel = 1000;
+	maxFuel = 1000;
+	fuelRegen = 0.5;
 	jetpacking = false;
 	numJumps = 2;
-	//maxJumps = 2;
+	maxJumps = 2;
 
 	//titan mode stuff
 	titanMode = false;
-	//titanModeActivated = false;
+	titanModeActivated = false;
+	saveHealth = 0;
+	writtenHealth = false;
 
 	//4 perks
-	fuelPlus = false;
+	blasterPlus = false;
 	titanBoost = false;
 	hardline = false;
 	jumper = false;
@@ -8588,6 +8596,15 @@ void idPlayer::PerformImpulse( int impulse ) {
 		}
 		case IMPULSE_19: {
 
+			if (!titanMode && fuel >= 1000)
+			{
+				titanMode = true;
+			}
+			else if (titanMode)
+			{
+				titanMode = false;
+			}
+			/*
 			if (!jetpacking && fuel > 10)
 			{
 				jetpacking = true;
@@ -8597,6 +8614,7 @@ void idPlayer::PerformImpulse( int impulse ) {
 			{
 				jetpacking = false;
 			}
+			*/
 			break;
 /*			
 			// when we're not in single player, IMPULSE_19 is used for showScores
@@ -8634,19 +8652,6 @@ void idPlayer::PerformImpulse( int impulse ) {
 					}
 				}
 			*/
-
-			common->Printf("Jumps: %d\n", numJumps);
-			if (numJumps > 0)
-			{
-				common->Printf("Fuck\n");
-				idVec3 v1 = physicsObj.GetLinearVelocity();
-				//physicsObj.GetGroundEntity;
-
-				v1.Set(10000, 10000, 10000);
-				physicsObj.AddForce(0, physicsObj.GetOrigin(), v1);
-				pfl.jump = true;
-				numJumps--;
-			}
 			break; 
 		}
 		case IMPULSE_22: {
@@ -9440,21 +9445,41 @@ void idPlayer::Think( void ) {
 	//////////////////////////////
 
 	//common->Printf();
-	//jet packing logic
-	if (jetpacking)
+
+	//titanMode fuel decrease
+	if (titanMode)
 	{
-		//upward force
+		//if empty titanMode off
 		if (fuel <= 0)
 		{
-			jetpacking = false;
-			titanMode = true;
+			titanMode = false;
 		}
-		else
+		else //decrease fuel
 		{
 			fuel -= 1;
+			common->Printf("Fuel: %f\n", fuel);
+		}
+	}
+	//increase fuel when titanMode is off
+	else
+	{
+		if (!writtenHealth)
+		{
+			health = saveHealth;//health returns to the old value before player entered titanMode
+			writtenHealth = true;
+		}
+		if(fuel < maxFuel) //increase fuel until max
+		{
+			fuel += fuelRegen;
+			common->Printf("Fuel: %f\n", fuel);
+		} 
+		else //if fuel filled allow the player to enter titan Mode again
+		{
+			titanModeActivated = false;
 		}
 	}
 
+	//checking for ground entity
 	idEntity *temp = physicsObj.GetGroundEntity();
 	if(temp != NULL)
 	{
@@ -9463,22 +9488,13 @@ void idPlayer::Think( void ) {
 		//so if null then you aren't touching the ground
 	}
 
-	//increase fuel when jetpack is off
-	else
-	{
-		if(fuel < 100)
-		{
-			fuel += 100;
-		}
-	}
-
 	//titan Mode activation
-	if(titanMode && health <= 100)
+	if(titanMode && !titanModeActivated)
 	{
+		saveHealth = health;
+		writtenHealth = false;
 		health = 500;
-		fuel = 0;
-		//fuelRegen = 0;
-		//titanModeActivated = true;
+		titanModeActivated = true;
 	}
 
 	//////////////////////////////

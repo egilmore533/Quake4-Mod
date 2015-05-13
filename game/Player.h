@@ -308,20 +308,22 @@ public:
 	//	Titan Quake Stuff
 	//////////////////////////////////////////////////
 	
-	//4 movement mods stuff
-	float					fuel;
-	float					maxFuel;
-	float					fuelRegen;
-	bool					jetpacking;
-	int						numJumps;
-	int						maxJumps;
+	//fuel stuff
+	float					fuel; //current fuel
+	float					maxFuel; //maximum fuel
+	float					fuelRegen; //how much fuel is restored per tic in player think
+	bool					jetpacking; //not used
+	int						numJumps; //not used 
+	int						maxJumps; //not used
 
 	//titan mode stuff
-	bool					titanMode;
-	bool					titanModeActivated;
+	bool					titanMode; //titan Mode On/Off
+	bool					titanModeActivated; //true when titanMode was On, false when fuel becomes max
+	int						saveHealth; //normal health stored
+	bool					writtenHealth; //true when normal health restored
 
 	//4 perks
-	bool					fuelPlus;
+	bool					blasterPlus;
 	bool					titanBoost;
 	bool					hardline;
 	bool					jumper;
